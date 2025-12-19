@@ -1,0 +1,16 @@
+<?php
+$_product = $block->getProduct();
+?>
+<!--  twitter product cards-->
+<meta name="twitter:card" content="<?php /* @noEscape */ echo $block->getTwitterCardType() ?>" />
+<meta name="twitter:domain" content="<?php /* @noEscape */ echo $block->getBaseUrl(); ?>" />
+<meta name="twitter:site" content="<?php /* @noEscape */ echo  (strlen(trim($block->getTwitterSite()))) ? "@" . $block->getTwitterSite() : '' ?>" />
+<meta name="twitter:creator" content="<?php /* @noEscape */ echo (strlen(trim($block->getTwitterCreator()))) ? "@" . $block->getTwitterCreator() : '' ?>" />
+<meta name="twitter:title" content="<?php /* @noEscape */ echo $block->escapeQuote($block->stripTags($_product->getName())); ?>" />
+<meta name="twitter:description" content="<?php /* @noEscape */ echo $block->escapeQuote($block->stripTags($block->getDescription($_product))); ?>" />
+<meta name="twitter:image" content="<?php /* @noEscape */ echo $block->stripTags($block->getImage($_product, 'product_base_image')->getImageUrl()); ?>" />
+<meta name="twitter:data1" content="<?php /* @noEscape */  echo $block->getCurrencyCode() ?><?php /* @noEscape */  echo $this->getPrice();  ?>" />
+<meta name="twitter:label1" content="PRICE" />
+<meta name="twitter:data2" content="<?php /* @noEscape */  echo $block->getShippingCountry(); ?>" />
+<meta name="twitter:label2" content="LOCATION" />
+<!--  twitter product cards-->

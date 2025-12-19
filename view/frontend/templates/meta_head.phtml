@@ -1,0 +1,58 @@
+<?php
+$_product = $this->getProduct();
+$_brand = $this->getBrand($_product) ?? '';
+$_sku = $this->getSku($_product) ?? '';
+
+$summaryModel = $block->getReviewSummary();
+
+$reviewCount = $summaryModel->getReviewsCount();
+if (!$reviewCount) {
+    $reviewCount = 0;
+}
+$ratingSummary = ($summaryModel->getRatingSummary()) ? $summaryModel->getRatingSummary() : 20;
+$wpCanonicalUrlEnabled = (bool)$_product->getData('wp_enable_canonical_url');
+$wpCanonicalUrl = $_product->getData('wp_canonical_url') ?? '';
+$productUrl = $_product->getUrlInStore();
+if ($wpCanonicalUrlEnabled) {
+    $productUrl = $wpCanonicalUrl;
+    $urlOptions = parse_url($wpCanonicalUrl);
+    if (!isset($urlOptions['scheme'])) {
+        $productUrl = $block->getBaseUrl() . $wpCanonicalUrl;
+    }
+}
+?>
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "<?php /* @noEscape  */ echo $block->escapeQuote($block->stripTags($_product->getName())); ?>",
+        "image": "<?php /* @noEscape */ echo $block->stripTags($block->getImage($_product, 'product_base_image')->getImageUrl()); ?>",
+        "description": "<?php /* @noEscape */ echo $block->escapeQuote($block->stripTags($block->getDescription($_product))); ?>",
+<?php if (strlen(trim($_brand))): ?>
+        "brand": {
+            "@type": "Brand",
+            "name": "<?php /* @noEscape */ echo $block->stripTags($_brand); ?>"
+        },
+<?php endif; ?>
+<?php if (strlen(trim($_sku))): ?>
+        "sku": "<?php /* @noEscape */ echo $block->stripTags($_sku); ?>",
+<?php endif; ?>
+<?php if ($reviewCount) : ?>
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "bestRating": 5,
+            "worstRating": 1,
+            "ratingValue": "<?php /* @noEscape */ echo $ratingSummary / 20 ; ?>",
+            "reviewCount": "<?php /* @noEscape */ echo $reviewCount ?>"
+        },
+<?php endif; ?>
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "<?php /* @noEscape */ echo $block->getCurrencyCode() ?>",
+            "url": "<?php /* @noEscape */ echo $block->stripTags($productUrl); ?>",
+            "availability": "<?php /* @noEscape */ echo $block->getProductAvailability($_product); ?>",
+            "price": "<?php /* @noEscape */ echo $this->getPrice(); ?>"
+        }
+    }
+</script>
